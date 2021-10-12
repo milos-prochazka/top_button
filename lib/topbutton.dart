@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-class TopButton extends StatefulWidget 
+class TopButton extends StatefulWidget
 {
   _TopButtonState? _state;
   final GestureTapCallback? onTap;
 
   TopButton({this.onTap}) {}
   @override
-  State<StatefulWidget> createState() 
+  State<StatefulWidget> createState()
   {
     _state = _TopButtonState(this);
     return _state!;
   }
 }
 
-class _TopButtonState extends State<TopButton> 
+class _TopButtonState extends State<TopButton>
 {
   TopButton widget;
   bool _down = false;
@@ -22,45 +22,45 @@ class _TopButtonState extends State<TopButton>
   _TopButtonState(this.widget);
 
   @override
-  Widget build(BuildContext context) 
+  Widget build(BuildContext context)
   {
     return GestureDetector
     (
       // ------------------------------------------------ //
-      onTapDown: (tap) 
+      onTapDown: (tap)
       {
         setState
         (
-          () 
+          ()
           {
             _down = true;
           }
         );
       },
       // ------------------------------------------------ //
-      onTapCancel: () 
+      onTapCancel: ()
       {
         setState
         (
-          () 
+          ()
           {
             _down = false;
           }
         );
       },
       // ------------------------------------------------ //
-      onTapUp: (tap) 
+      onTapUp: (tap)
       {
         setState
         (
-          () 
+          ()
           {
             _down = false;
           }
         );
       },
       // ------------------------------------------------ //
-      onTap: () 
+      onTap: ()
       {
         widget.onTap?.call();
       },
@@ -93,7 +93,7 @@ class _TopButtonState extends State<TopButton>
           foregroundDecoration: BoxDecoration(color: Color(_down ? 0x6000CCFF : 0x00000000)),
           child: FittedBox
           (
-            fit: BoxFit.fill,
+            fit: BoxFit.contain,
             child: Center
             (
               child: Column
@@ -103,12 +103,14 @@ class _TopButtonState extends State<TopButton>
                   Text
                   (
                     'Text',
-                    style: TextStyle(color: Colors.white, fontSize: 30),
+                    style: TextStyle(color: Colors.white, fontSize: 80),
                   ),
                   Image
                   (
                     image: AssetImage('resources/biglock_btn_close.png'),
-                    color: Colors.white,
+                    //color: Colors.white,
+                    filterQuality: FilterQuality.high,
+                    height: 120,
                   ),
                 ],
               ),
