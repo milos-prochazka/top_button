@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class TopButtons extends StatefulWidget
+class TopButtons extends StatefulWidget 
 {
   @override
   State<TopButtons> createState() => _TopButtonsState();
 }
 
-class _TopButtonsState extends State<TopButtons>
+class _TopButtonsState extends State<TopButtons> 
 {
   @override
-  Widget build(BuildContext context)
+  Widget build(BuildContext context) 
   {
     return new Flow
     (
@@ -25,28 +25,28 @@ class _TopButtonsState extends State<TopButtons>
 
   TopButtons() : super(delegate: _FlowDelegate());
 
-
+  
 }*/
 
-class TopButtonItem
+class TopButtonItem 
 {
   String? id;
   Widget? child;
   late double relativewidth;
 
-  TopButtonItem({this.id, required this.child, double? relativeWidth})
+  TopButtonItem({this.id, required this.child, double? relativeWidth}) 
   {
     this.relativewidth = relativeWidth ?? 1;
   }
 }
 
-class _FlowDelegate extends FlowDelegate
+class _FlowDelegate extends FlowDelegate 
 {
   @override
-  void paintChildren(FlowPaintingContext context)
+  void paintChildren(FlowPaintingContext context) 
   {
     double dx = 0.0;
-    for (int i = 0; i < context.childCount; ++i)
+    for (int i = 0; i < context.childCount; ++i) 
     {
       var s = context.getChildSize(i)!;
       var matrix = Matrix4.diagonal3Values(1, 1, 1);
@@ -65,7 +65,7 @@ class _FlowDelegate extends FlowDelegate
   }
 
   @override
-  bool shouldRepaint(covariant FlowDelegate oldDelegate)
+  bool shouldRepaint(covariant FlowDelegate oldDelegate) 
   {
     // TODO: implement shouldRepaint
     return false;
