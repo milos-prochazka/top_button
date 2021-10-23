@@ -6,27 +6,40 @@ class TopButtons extends StatefulWidget
   State<TopButtons> createState() => _TopButtonsState();
 }
 
-class _TopButtonsState extends State<TopButtons> 
+class _TopButtonsState extends State<TopButtons> with SingleTickerProviderStateMixin 
 {
+  late AnimationController menuAnimation;
+
   @override
   Widget build(BuildContext context) 
   {
+    menuAnimation.forward();
+
     return new Flow
     (
-      delegate: _FlowDelegate(),
-      children: [Text('Uvidime jak to dopadne')],
+      delegate: _FlowDelegate(menuAnimation: menuAnimation),
+      children: 
+      [
+        Text
+        (
+          'Uvidime jak to dopadne',
+          style: TextStyle(backgroundColor: Colors.indigo),
+        )
+      ],
+    );
+  }
+
+  @override
+  void initState() 
+  {
+    super.initState();
+    menuAnimation = AnimationController
+    (
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
     );
   }
 }
-
-/*class TopButtons extends Flow
-{
-  static var myDelegate;
-
-  TopButtons() : super(delegate: _FlowDelegate());
-
-  
-}*/
 
 class TopButtonItem 
 {
@@ -42,17 +55,29 @@ class TopButtonItem
 
 class _FlowDelegate extends FlowDelegate 
 {
+  final Animation<double> menuAnimation;
+
+  _FlowDelegate({required this.menuAnimation}) : super(repaint: menuAnimation);
+
+  @override
+  bool shouldRepaint(_FlowDelegate oldDelegate) 
+  {
+    return true; //menuAnimation != oldDelegate.menuAnimation;
+  }
+
   @override
   void paintChildren(FlowPaintingContext context) 
   {
-    double dx = 0.0;
+    double dx = menuAnimation.value;
     for (int i = 0; i < context.childCount; ++i) 
     {
+      print("paintChildren $dx");
       var s = context.getChildSize(i)!;
       var matrix = Matrix4.diagonal3Values(1, 1, 1);
-      matrix.translate(-s.width * 0.5, -s.height * 0.5, 0.0);
-      matrix.rotateZ(0.1);
-      matrix.translate(s.width * 0.5, s.height * 0.5, 0.0);
+      matrix.setTranslationRaw(1, (dx - 1) * s.height, 1);
+      //matrix.translate(-s.width * 0.5, -s.height * 0.5, 0.0);
+      //matrix.rotateZ(0.1);
+      //matrix.translate(s.width * 0.5, s.height * 0.5, 0.0);
       //matrix.translate(10.0,1.0,0.0);
 
       //matrix.translate(10,10.0,0.0);
@@ -62,12 +87,5 @@ class _FlowDelegate extends FlowDelegate
         transform: matrix,
       );
     }
-  }
-
-  @override
-  bool shouldRepaint(covariant FlowDelegate oldDelegate) 
-  {
-    // TODO: implement shouldRepaint
-    return false;
   }
 }
