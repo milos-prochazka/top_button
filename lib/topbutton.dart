@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class TopButton extends StatefulWidget
 {
+
   _TopButtonState? _state;
   final GestureTapCallback? onTap;
 
@@ -68,7 +69,7 @@ class _TopButtonState extends State<TopButton>
       child: Container
       (
         height: 150,
-        width: 200,
+        width: 150,
         decoration: BoxDecoration
         (
           //borderRadius: BorderRadius.circular(10),
@@ -105,13 +106,15 @@ class _TopButtonState extends State<TopButton>
                     'Text',
                     style: TextStyle(color: Colors.white, fontSize: 80),
                   ),
+                  
+                  Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 32),child: 
                   Image
                   (
                     image: AssetImage('resources/biglock_btn_close.png'),
-                    //color: Colors.white,
+                    color: Colors.white,
                     filterQuality: FilterQuality.high,
                     height: 120,
-                  ),
+                  )),
                 ],
               ),
             ),
