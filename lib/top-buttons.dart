@@ -3,6 +3,10 @@ import 'package:top_button/topbutton.dart';
 
 class TopButtons extends StatefulWidget
 {
+  final List<TopButtonItem> children;
+
+  TopButtons(this.children);
+
   @override
   State<TopButtons> createState() => _TopButtonsState();
 }
@@ -19,7 +23,7 @@ class _TopButtonsState extends State<TopButtons> with SingleTickerProviderStateM
 
     return new Flow
     (
-      delegate: _FlowDelegate(menuAnimation: menuAnimation,state: this),
+      delegate: _FlowDelegate(menuAnimation: menuAnimation, state: this),
       children:
       [
         /*Text
@@ -61,7 +65,7 @@ class _FlowDelegate extends FlowDelegate
   final Animation<double> menuAnimation;
   final _TopButtonsState state;
 
-  _FlowDelegate({required this.menuAnimation,required this.state}) : super(repaint: menuAnimation);
+  _FlowDelegate({required this.menuAnimation, required this.state}) : super(repaint: menuAnimation);
 
   @override
   bool shouldRepaint(_FlowDelegate oldDelegate)
@@ -71,24 +75,23 @@ class _FlowDelegate extends FlowDelegate
 
   _TopButtonsMeasure calcMeasure(FlowPaintingContext context)
   {
-    var result =  _TopButtonsMeasure();
+    var result = _TopButtonsMeasure();
     this.state.measure = result;
     return result;
   }
-
 
   @override
   void paintChildren(FlowPaintingContext context)
   {
     double dx = menuAnimation.value;
     final measure = state.measure ?? calcMeasure(context);
-  
+
     for (int i = 0; i < context.childCount; ++i)
     {
       print("paintChildren $dx ${context.size.height}");
       var s = context.getChildSize(i)!;
       var w = context.size;
-      var matrix = Matrix4.diagonal3Values(measure.buttonWidth/s.width, measure.topLineHeight/s.height, 1);
+      var matrix = Matrix4.diagonal3Values(measure.buttonWidth / s.width, measure.topLineHeight / s.height, 1);
       matrix.setTranslationRaw(0, (dx - 1) * s.height, 0);
       //matrix.translate(-s.width * 0.5, -s.height * 0.5, 0.0);
       //matrix.rotateZ(0.1);
@@ -107,6 +110,6 @@ class _FlowDelegate extends FlowDelegate
 
 class _TopButtonsMeasure
 {
-    double topLineHeight=350;
-    double buttonWidth=350;
+  double topLineHeight = 350;
+  double buttonWidth = 350;
 }

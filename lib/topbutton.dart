@@ -1,17 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:top_button/top-buttons.dart';
+//ignore_for_file: non_constant_identifier_names
 
 class TopButton extends StatefulWidget
 {
-
-  _TopButtonState? _state;
   final GestureTapCallback? onTap;
 
-  TopButton({this.onTap}) {}
+  TopButton({this.onTap});
+
+  static TopButtonItem CreateTopButton
+  (
+    {required String id, required String text, GestureTapCallback? onTap, double releativeWidth = 0}
+  )
+  {
+    return TopButtonItem
+    (
+      id: id,
+      child: TopButton
+      (
+        onTap: onTap,
+      ),
+      relativeWidth: releativeWidth
+    );
+  }
+
   @override
   State<StatefulWidget> createState()
   {
-    _state = _TopButtonState(this);
-    return _state!;
+    return _TopButtonState(this);
   }
 }
 
@@ -106,15 +122,17 @@ class _TopButtonState extends State<TopButton>
                     'Text',
                     style: TextStyle(color: Colors.white, fontSize: 80),
                   ),
-                  
-                  Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 32),child: 
-                  Image
+                  Padding
                   (
-                    image: AssetImage('resources/biglock_btn_close.png'),
-                    color: Colors.white,
-                    filterQuality: FilterQuality.high,
-                    height: 120,
-                  )),
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 32),
+                    child: Image
+                    (
+                      image: AssetImage('resources/biglock_btn_close.png'),
+                      color: Colors.white,
+                      filterQuality: FilterQuality.high,
+                      height: 120,
+                    )
+                  ),
                 ],
               ),
             ),
