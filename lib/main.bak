@@ -90,7 +90,27 @@ class _MyHomePageState extends State<MyHomePage>
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: TopButtons([TopButton.CreateTopButton(id: 'jaja', text: 'Paja')]),
+      body: TopButtons
+      (
+        [
+          TopButtonItem
+          (
+            type: TopButtonType.top,
+            builder: (c, i) 
+            {
+              return TopButton();
+            }
+          ),
+          TopButtonItem
+          (
+            type: TopButtonType.top,
+            builder: (c, i) 
+            {
+              return Text("Text 222");
+            }
+          ),
+        ]
+      ),
       /*Center
       (
         // Center is a layout widget. It takes a single child and positions it
