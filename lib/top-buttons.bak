@@ -45,10 +45,17 @@ class _TopButtonsState extends State<TopButtons> with SingleTickerProviderStateM
       childList.add(newWidget);
     }
 
-    return new Flow
+    return OrientationBuilder
     (
-      delegate: _FlowDelegate(menuAnimation: menuAnimation, state: this),
-      children: childList,
+      builder: (context, orientation) 
+      {
+        measure = null;
+        return Flow
+        (
+          delegate: _FlowDelegate(menuAnimation: menuAnimation, state: this),
+          children: childList,
+        );
+      }
     );
   }
 

@@ -79,59 +79,67 @@ class _TopButtonState extends State<TopButton>
         widget.onTap?.call();
       },
       // ------------------------------------------------ //
-      child: Container
+      child: OrientationBuilder
       (
-        height: 150,
-        width: 200,
-        decoration: BoxDecoration
-        (
-          //borderRadius: BorderRadius.circular(10),
-          color: Color(0xEE000000),
-          border: Border.all
+        builder: (context, orientation) 
+        {
+          final buttonWidth = orientation == Orientation.landscape ? 300.0 : 150.0;
+          final buttonHeight = 200.0;
+          return Container
           (
-            color: Colors.transparent,
-            width: 8,
-          ),
-        ),
-        // /---------------------------------------
-
-        // ----------------------------------------
-        child: Container
-        (
-          decoration: BoxDecoration
-          (
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.transparent,
-            border: Border.all(color: Colors.white, width: 4)
-          ),
-          foregroundDecoration: BoxDecoration(color: Color(_down ? 0x6000CCFF : 0x00000000)),
-          child: FittedBox
-          (
-            fit: BoxFit.contain,
-            child: Center
+            height: buttonHeight,
+            width: buttonWidth,
+            decoration: BoxDecoration
             (
-              child: Column
+              //borderRadius: BorderRadius.circular(10),
+              color: Color(0xEE000000),
+              border: Border.all
               (
-                children: <Widget>
-                [
-                  Text
-                  (
-                    'Text',
-                    style: TextStyle(color: Colors.white, fontSize: 80),
-                  ),
-                  Image
-                  (
-                    image: AssetImage('resources/biglock_btn_close.png'),
-                    //color: Colors.white,
-                    filterQuality: FilterQuality.high,
-                    height: 120,
-                  ),
-                ],
+                color: Colors.transparent,
+                width: 8,
               ),
             ),
-          ),
-        ),
-      ),
+            // /---------------------------------------
+
+            // ----------------------------------------
+            child: Container
+            (
+              decoration: BoxDecoration
+              (
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.transparent,
+                border: Border.all(color: Colors.white, width: 4)
+              ),
+              foregroundDecoration: BoxDecoration(color: Color(_down ? 0x6000CCFF : 0x00000000)),
+              child: FittedBox
+              (
+                fit: BoxFit.contain,
+                child: Center
+                (
+                  child: Column
+                  (
+                    children: <Widget>
+                    [
+                      Text
+                      (
+                        'Text',
+                        style: TextStyle(color: Colors.white, fontSize: 80),
+                      ),
+                      Image
+                      (
+                        image: AssetImage('resources/biglock_btn_close.png'),
+                        //color: Colors.white,
+                        filterQuality: FilterQuality.high,
+                        height: 120,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      )
     );
   }
 }

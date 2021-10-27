@@ -1,3 +1,3 @@
 #!/bin/sh
 cd ..
-dart-format ./ 4
+dart-format ./ 2
