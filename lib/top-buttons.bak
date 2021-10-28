@@ -7,8 +7,17 @@ class TopButtons extends StatefulWidget
 {
   final List<TopButtonItem> buttons;
   final TopButtonsControl control = TopButtonsControl();
+  final Color foregroundColor;
+  final Color backgroundColor;
 
-  TopButtons(this.buttons);
+  TopButtons(this.buttons, {this.foregroundColor = Colors.white, this.backgroundColor = Colors.black}) 
+  {
+    for (var button in this.buttons) 
+    {
+      button.foregroundColor = this.foregroundColor;
+      button.backgroundColor = this.backgroundColor;
+    }
+  }
 
   @override
   State<TopButtons> createState() => _TopButtonsState(this, control);
@@ -85,6 +94,8 @@ class TopButtonItem
   double hideTop = 0;
   double hideWidth = 0;
   double hideHeight = 0;
+  Color foregroundColor = Colors.black;
+  Color backgroundColor = Colors.white;
 
   TopButtonItem({this.id, required this.type, required this.builder, double? relativeWidth}) 
   {
@@ -119,6 +130,7 @@ class _FlowDelegate extends FlowDelegate
 
     result.landscape = landscape;
 
+    // ---------------------------------------------------------
     for (var item in state.widget.buttons) 
     {
       switch (item.type) 
@@ -136,6 +148,7 @@ class _FlowDelegate extends FlowDelegate
       }
     }
 
+    // Top buttony ---------------------------------------------
     double sumWidth = topList.fold(0.0, (a, b) => a + b.relativewidth);
 
     if (result.landscape) 
@@ -159,12 +172,27 @@ class _FlowDelegate extends FlowDelegate
       left += item.viewWidth;
     }
 
+    // Bottom buttony ----------------------------------------------
+    sumWidth = bottomList.fold(0.0, (a, b) => a + b.relativewidth);
+
+    if (result.landscape) 
+    {
+      result.bottomButtonWidth = width / sumWidth;
+      result.bottomLineHeight = result.bottomButtonWidth / 2;
+    } 
+    else 
+    {
+      result.bottomButtonWidth = Math.min(width / sumWidth, height / 5);
+      result.bottomLineHeight = result.bottomButtonWidth;
+    }
+
     left = 0;
     for (var item in bottomList) 
     {
       item.viewLeft = left;
       item.viewWidth = result.bottomButtonWidth * item.relativewidth;
       item.viewHeight = result.bottomLineHeight;
+      item.hideTop = height;
       item.viewTop = height - item.viewHeight;
       left += item.viewWidth;
     }
@@ -172,6 +200,11 @@ class _FlowDelegate extends FlowDelegate
     this.state.measure = result;
 
     return result;
+  }
+
+  static double translate(double relative, double min, double max) 
+  {
+    return min + relative * (max - min);
   }
 
   @override
@@ -188,8 +221,8 @@ class _FlowDelegate extends FlowDelegate
       var s = context.getChildSize(i)!;
       var w = context.size;
 
-      var matrix = Matrix4.diagonal3Values(info.viewWidth / s.width, info.viewHeight / s.height, 1);
-      matrix.setTranslationRaw(info.viewLeft * dx, (dx - 1) * info.viewHeight, 0);
+      var matrix = Matrix4.diagonal3Values(info.viewWidth / s.width * dx, info.viewHeight / s.height * dx, 1);
+      matrix.setTranslationRaw(info.viewLeft * dx, translate(dx, info.hideTop, info.viewTop), 0);
       //matrix.translate(-s.width * 0.5, -s.height * 0.5, 0.0);
       //matrix.rotateZ(0.1);
       //matrix.translate(s.width * 0.5, s.height * 0.5, 0.0);

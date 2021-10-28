@@ -4,10 +4,26 @@ import 'package:top_button/top-buttons.dart';
 class TopButton extends StatefulWidget
 {
   final GestureTapCallback? onTap;
+  final double relativeWidth;
+  final String text;
+  final String image;
+  final Color foregroundColor;
+  final Color backgroundColor;
 
-  TopButton({this.onTap});
+  TopButton
+  (
+    {this.onTap,
+      this.relativeWidth = 1.0,
+      this.text = 'Text',
+      this.image = 'resources/biglock_btn_close.png',
+      this.foregroundColor = Colors.white,
+      this.backgroundColor = Colors.black}
+  );
 
-  static TopButtonItem createItem({String? id, required TopButtonType type, double? relativeWidth})
+  static TopButtonItem createItem
+  (
+    {String? id, required TopButtonType type, String text = 'Text', double relativeWidth = 1.0}
+  )
   {
     return TopButtonItem
     (
@@ -16,7 +32,13 @@ class TopButton extends StatefulWidget
       relativeWidth: relativeWidth,
       builder: (context, item)
       {
-        return TopButton();
+        return TopButton
+        (
+          relativeWidth: relativeWidth,
+          text: text,
+          backgroundColor: item.backgroundColor,
+          foregroundColor: item.foregroundColor
+        );
       }
     );
   }
@@ -83,7 +105,8 @@ class _TopButtonState extends State<TopButton>
       (
         builder: (context, orientation)
         {
-          final buttonWidth = orientation == Orientation.landscape ? 300.0 : 150.0;
+          double width = MediaQuery.of(context).size.width;
+          final buttonWidth = widget.relativeWidth * (orientation == Orientation.landscape ? 400.0 : 200.0);
           final buttonHeight = 200.0;
           return Container
           (
@@ -92,7 +115,7 @@ class _TopButtonState extends State<TopButton>
             decoration: BoxDecoration
             (
               //borderRadius: BorderRadius.circular(10),
-              color: Color(0xEE000000),
+              color: widget.backgroundColor,
               border: Border.all
               (
                 color: Colors.transparent,
@@ -108,7 +131,7 @@ class _TopButtonState extends State<TopButton>
               (
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.transparent,
-                border: Border.all(color: Colors.white, width: 4)
+                border: Border.all(color: widget.foregroundColor, width: 4)
               ),
               foregroundDecoration: BoxDecoration(color: Color(_down ? 0x6000CCFF : 0x00000000)),
               child: FittedBox
@@ -122,21 +145,23 @@ class _TopButtonState extends State<TopButton>
                     [
                       Text
                       (
-                        'Text',
-                        style: TextStyle(color: Colors.white, fontSize: 80),
+                        widget.text,
+                        style: TextStyle(color: widget.foregroundColor, fontSize: 40),
                       ),
                       Image
                       (
-                        image: AssetImage('resources/biglock_btn_close.png'),
-                        //color: Colors.white,
+                        image: AssetImage(widget.image),
+                        color: widget.foregroundColor,
                         filterQuality: FilterQuality.high,
-                        height: 120,
+                        height: 60,
+                        width: 60,
                       ),
                     ],
                   ),
                 ),
               ),
             ),
+            // ----------------------------------------
           );
         }
       )

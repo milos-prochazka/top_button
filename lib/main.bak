@@ -90,26 +90,26 @@ class _MyHomePageState extends State<MyHomePage>
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: TopButtons
+      body: SafeArea
       (
-        [
-          TopButtonItem
-          (
-            type: TopButtonType.top,
-            builder: (c, i) 
-            {
-              return TopButton();
-            }
-          ),
-          TopButtonItem
-          (
-            type: TopButtonType.top,
-            builder: (c, i) 
-            {
-              return Text("Text 222");
-            }
-          ),
-        ]
+        child: TopButtons
+        (
+          [
+            TopButtonItem
+            (
+              type: TopButtonType.top,
+              builder: (c, i) 
+              {
+                return TopButton();
+              }
+            ),
+            TopButton.createItem(type: TopButtonType.top, relativeWidth: 1.5, text: 'Tlac 2'),
+            TopButton.createItem(type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B1'),
+            TopButton.createItem(type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B2'),
+            TopButton.createItem(type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B3'),
+          ],
+          backgroundColor: Color.fromARGB(0xcc, 0x20, 0x40, 0xcc).withAlpha(50),
+        )
       ),
       /*Center
       (
