@@ -37,7 +37,16 @@ class TopButton extends StatefulWidget
           relativeWidth: relativeWidth,
           text: text,
           backgroundColor: item.backgroundColor,
-          foregroundColor: item.foregroundColor
+          foregroundColor: item.foregroundColor,
+          onTap: ()
+          {
+            final param = TopButtonCmd();
+
+            param.id = item.id ?? '?';
+            param.cmdType = TopButtonCmdType.click;
+
+            item.event!(param);
+          },
         );
       }
     );
@@ -105,7 +114,6 @@ class _TopButtonState extends State<TopButton>
       (
         builder: (context, orientation)
         {
-          double width = MediaQuery.of(context).size.width;
           final buttonWidth = widget.relativeWidth * (orientation == Orientation.landscape ? 400.0 : 200.0);
           final buttonHeight = 200.0;
           return Container
@@ -148,13 +156,17 @@ class _TopButtonState extends State<TopButton>
                         widget.text,
                         style: TextStyle(color: widget.foregroundColor, fontSize: 40),
                       ),
-                      Image
+                      Padding
                       (
-                        image: AssetImage(widget.image),
-                        color: widget.foregroundColor,
-                        filterQuality: FilterQuality.high,
-                        height: 60,
-                        width: 60,
+                        padding: EdgeInsets.all(5),
+                        child: Image
+                        (
+                          image: AssetImage(widget.image),
+                          color: widget.foregroundColor,
+                          filterQuality: FilterQuality.high,
+                          height: 60,
+                          width: 60,
+                        ),
                       ),
                     ],
                   ),

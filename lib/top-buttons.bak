@@ -9,13 +9,15 @@ class TopButtons extends StatefulWidget
   final TopButtonsControl control = TopButtonsControl();
   final Color foregroundColor;
   final Color backgroundColor;
+  final TopButtonEvent? event;
 
-  TopButtons(this.buttons, {this.foregroundColor = Colors.white, this.backgroundColor = Colors.black}) 
+  TopButtons(this.buttons, {this.foregroundColor = Colors.white, this.backgroundColor = Colors.black, this.event}) 
   {
-    for (var button in this.buttons) 
+    for (var item in this.buttons) 
     {
-      button.foregroundColor = this.foregroundColor;
-      button.backgroundColor = this.backgroundColor;
+      item.foregroundColor = this.foregroundColor;
+      item.backgroundColor = this.backgroundColor;
+      item.event = this.event;
     }
   }
 
@@ -96,8 +98,9 @@ class TopButtonItem
   double hideHeight = 0;
   Color foregroundColor = Colors.black;
   Color backgroundColor = Colors.white;
+  TopButtonEvent? event;
 
-  TopButtonItem({this.id, required this.type, required this.builder, double? relativeWidth}) 
+  TopButtonItem({this.id, required this.type, required this.builder, double? relativeWidth, this.event}) 
   {
     this.relativewidth = relativeWidth ?? 1;
   }
@@ -246,3 +249,16 @@ class _TopButtonsMeasure
   double bottomLineHeight = 100;
   double bottomButtonWidth = 100;
 }
+
+/// Typ prikazu top button
+enum TopButtonCmdType { click }
+
+/// Parametry prikazu Top button
+class TopButtonCmd 
+{
+  TopButtonCmdType cmdType = TopButtonCmdType.click;
+  String id = '?';
+}
+
+/// Udalost TopButton
+typedef void TopButtonEvent(TopButtonCmd cmd);
