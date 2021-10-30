@@ -57,7 +57,7 @@ class PropertyBinder extends InheritedWidget
     return result!;
   }
 
-  static void call(BuildContext context, PropertyBinderCaller caller)
+  static void doOn(BuildContext context, PropertyBinderDoOn caller)
   {
     final PropertyBinder? result = context.dependOnInheritedWidgetOfExactType<PropertyBinder>();
     if (result != null)
@@ -67,10 +67,36 @@ class PropertyBinder extends InheritedWidget
   }
 
   @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget)
+  bool updateShouldNotify(covariant PropertyBinder oldWidget)
   {
-    return false;
+    return true;
   }
 }
 
-typedef void PropertyBinderCaller(PropertyBinder binder);
+typedef void PropertyBinderDoOn(PropertyBinder binder);
+
+class BindableProperty
+{
+  final events = <PropertyOnChange>[];
+  final String key;
+  late Object value;
+
+  BindableProperty(this.key, this.value);
+
+  bool compare(Object other)
+  {
+    bool result = false;
+
+    try
+    {
+      final c1 = value as Comparable;
+
+      result = c1.compareTo(other) == 0;
+    }
+    catch (_) {}
+
+    return result;
+  }
+}
+
+typedef void PropertyOnChange(PropertyBinder binder, BindableProperty property);

@@ -16,6 +16,9 @@ class MyApp extends StatelessWidget
   @override
   Widget build(BuildContext context)
   {
+    final p = BindableProperty('aaa', 'lojza');
+    final cmp = p.compare('lojza');
+
     return MaterialApp
     (
       title: 'Flutter Demo',
@@ -97,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
               event: (param)
               {
                 var i = param.cmdType;
-                PropertyBinder.call
+                PropertyBinder.doOn
                 (
                   context, (binder)
                   {
