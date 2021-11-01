@@ -27,11 +27,39 @@ class TopButtons extends StatefulWidget
 
 class TopButtonsControl
 {
-  late _TopButtonsState state;
+  _TopButtonsState? state;
+
+  TopButtonsControl()
+  {
+    var brk = 1;
+  }
+
+  set visible(bool value)
+  {
+    if (state != null)
+    {
+      var state = this.state!;
+      if (state._visible != value)
+      {
+        state._visible = value;
+        if (value)
+        {
+          state.menuAnimation.forward();
+        }
+        else
+        {
+          state.menuAnimation.reverse();
+        }
+      }
+    }
+  }
+
+  bool get visible => state?._visible ?? false;
 }
 
 class _TopButtonsState extends State<TopButtons> with SingleTickerProviderStateMixin
 {
+  bool _visible = false;
   late AnimationController menuAnimation;
   _TopButtonsMeasure? measure;
   TopButtons widget;
@@ -45,7 +73,6 @@ class _TopButtonsState extends State<TopButtons> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context)
   {
-    menuAnimation.forward();
     final childList = <Widget>[];
     itemsInfo.clear();
 
@@ -61,6 +88,9 @@ class _TopButtonsState extends State<TopButtons> with SingleTickerProviderStateM
       builder: (context, orientation)
       {
         measure = null;
+        menuAnimation.reset();
+        _visible = false;
+
         return Flow
         (
           delegate: _FlowDelegate(menuAnimation: menuAnimation, state: this),

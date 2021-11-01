@@ -18,13 +18,13 @@ class MyApp extends StatelessWidget
   {
     return MaterialApp
     (
-      title: 'Flutter Demo',
+      title: 'TopButtons',
       navigatorObservers: [defaultLifecycleObserver],
       theme: ThemeData
       (
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'TopButtons Page'),
     );
   }
 }
@@ -43,6 +43,7 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
 {
   int _counter = 0;
   PropertyBinderState? binderState;
+  TopButtons? topButtons;
 
   @override
   void onLifecycleEvent(LifecycleEvent event)
@@ -52,13 +53,15 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
 
   void _incrementCounter()
   {
-    setState
+    topButtons?.control.visible = !(topButtons?.control.visible ?? true);
+    /*setState
     (
       ()
       {
         _counter++;
+        topButtons?.control.visible = ! (topButtons?.control.visible ?? true);
       }
-    );
+    );*/
   }
 
   @override
@@ -80,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
         binderState = PropertyBinderState.createOrChange(PropertyBinder.of(context), binderState);
         binderState!.setOnChange
         (
-          'cnt', (binder, property)
+'cnt', (binder, property)
           {
             print('cnt = ${property.value as double}');
           }
@@ -93,8 +96,7 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
           ),
           body: SafeArea
           (
-            key: Key('aaaa'),
-            child: TopButtons
+            child: topButtons = TopButtons
             (
               [
                 TopButtonItem

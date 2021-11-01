@@ -23,7 +23,7 @@ class PropertyBinder extends InheritedWidget
     }
   }
 
-  void setOnChange(String? key, PropertyOnChange onChange)
+  void _setOnChange(String? key, PropertyOnChange onChange)
   {
     if (key == null)
     {
@@ -253,7 +253,7 @@ class PropertyBinderState
   {
     if (!eventList.contains(onChange))
     {
-      binder.setOnChange(name, onChange);
+      binder._setOnChange(name, onChange);
     }
   }
 
