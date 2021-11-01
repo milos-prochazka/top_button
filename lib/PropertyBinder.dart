@@ -2,26 +2,66 @@ import 'package:flutter/widgets.dart';
 
 class PropertyBinder extends InheritedWidget
 {
-  final properties = <String, Object>{};
+  final events = <PropertyOnChange>[];
+  final properties = <String, BindableProperty>{};
 
   PropertyBinder({Key? key, required BuildContext context, required WidgetBuilder builder})
   : super(key: key, child: Builder(builder: builder));
 
-  void setProperty(String name, Object value)
+  /// Nastaveni property
+  /// - [key] Nazev property
+  /// - [value] Hodnota property
+  void setProperty(String key, dynamic value)
   {
-    properties[name] = value;
-  }
-
-  void removeProperty(String name)
-  {
-    properties.remove(name);
-  }
-
-  Object? getPropertyObject(String name, [Object? defValue])
-  {
-    if (properties.containsKey(name))
+    if (!properties.containsKey(key))
     {
-      return properties[name] ?? defValue;
+      properties[key] = BindableProperty(key, value);
+    }
+    else
+    {
+      properties[key]?.setValue(this, value);
+    }
+  }
+
+  void setOnChange(String? key, PropertyOnChange onChange)
+  {
+    if (key == null)
+    {
+      if (!this.events.contains(onChange))
+      {
+        this.events.add(onChange);
+      }
+    }
+    else
+    {
+      BindableProperty prop;
+      if (!properties.containsKey(key))
+      {
+        prop = BindableProperty(key, null);
+        properties[key] = prop;
+      }
+      else
+      {
+        prop = properties[key]!;
+      }
+
+      if (!prop.events.contains(onChange))
+      {
+        prop.events.add(onChange);
+      }
+    }
+  }
+
+  void removeProperty(String key)
+  {
+    properties.remove(key);
+  }
+
+  dynamic getPropertyDynamic(String key, [dynamic defValue])
+  {
+    if (properties.containsKey(key))
+    {
+      return properties[key]?.value ?? defValue;
     }
     else
     {
@@ -29,19 +69,33 @@ class PropertyBinder extends InheritedWidget
     }
   }
 
+  BindableProperty getOrCreateBindableProperty(String key, [dynamic defValue])
+  {
+    if (properties.containsKey(key))
+    {
+      return properties[key]!;
+    }
+    else
+    {
+      var result = BindableProperty(key, defValue);
+      properties[key] = result;
+      return result;
+    }
+  }
+
   T getProperty<T>(String name, T defValue)
   {
     if (properties.containsKey(name))
     {
-      final objRes = properties[name];
+      final prop = properties[name];
 
-      if (objRes == null)
+      if (prop == null)
       {
         return defValue;
       }
       else
       {
-        return (defValue is T) ? objRes as T : defValue;
+        return (prop.value is T) ? prop.value as T : defValue;
       }
     }
     else
@@ -57,12 +111,50 @@ class PropertyBinder extends InheritedWidget
     return result!;
   }
 
+  static T ofT<T extends PropertyBinder>(BuildContext context)
+  {
+    final result = context.dependOnInheritedWidgetOfExactType<T>();
+    assert(result != null, 'No PropertyBinder found in context');
+    return result!;
+  }
+
   static void doOn(BuildContext context, PropertyBinderDoOn caller)
   {
     final PropertyBinder? result = context.dependOnInheritedWidgetOfExactType<PropertyBinder>();
     if (result != null)
     {
       caller(result);
+    }
+  }
+
+  static void doOnT<T extends PropertyBinder>(BuildContext context, PropertyBinderDoOn caller)
+  {
+    try
+    {
+      final T? result = context.dependOnInheritedWidgetOfExactType<T>();
+      if (result != null)
+      {
+        caller(result);
+      }
+    }
+    catch ($) {}
+  }
+
+  static void doOnProperty(BuildContext context, String key, PropertyBinderDoOnProperty caller)
+  {
+    final PropertyBinder? binder = context.dependOnInheritedWidgetOfExactType<PropertyBinder>();
+    if (binder != null)
+    {
+      caller(binder, binder.getOrCreateBindableProperty(key, null));
+    }
+  }
+
+  static void doOnPropertyT<T>(BuildContext context, String key, T defValue, PropertyBinderDoOnProperty caller)
+  {
+    final PropertyBinder? binder = context.dependOnInheritedWidgetOfExactType<PropertyBinder>();
+    if (binder != null)
+    {
+      caller(binder, binder.getOrCreateBindableProperty(key, defValue));
     }
   }
 
@@ -73,17 +165,18 @@ class PropertyBinder extends InheritedWidget
   }
 }
 
-typedef void PropertyBinderDoOn(PropertyBinder binder);
+typedef PropertyBinderDoOn = void Function(PropertyBinder binder);
+typedef PropertyBinderDoOnProperty = void Function(PropertyBinder binder, BindableProperty property);
 
 class BindableProperty
 {
   final events = <PropertyOnChange>[];
   final String key;
-  late Object value;
+  late dynamic value;
 
   BindableProperty(this.key, this.value);
 
-  bool compare(Object other)
+  bool compare(dynamic other)
   {
     bool result = false;
 
@@ -97,6 +190,89 @@ class BindableProperty
 
     return result;
   }
+
+  T valueT<T>([T? defValue])
+  {
+    if (value is T)
+    {
+      return value as T;
+    }
+    else
+    {
+      return defValue!;
+    }
+  }
+
+  void setValue(PropertyBinder binder, dynamic newValue)
+  {
+    if (!compare(newValue))
+    {
+      this.value = newValue;
+
+      events.forEach
+      (
+        (element)
+        {
+          element(binder, this);
+        }
+      );
+
+      binder.events.forEach
+      (
+        (element)
+        {
+          element(binder, this);
+        }
+      );
+    }
+  }
 }
 
 typedef void PropertyOnChange(PropertyBinder binder, BindableProperty property);
+
+class PropertyBinderState
+{
+  final eventList = <_PropertyBinderStackItem>[];
+  final PropertyBinder binder;
+
+  PropertyBinderState._(this.binder);
+
+  static PropertyBinderState createOrChange(PropertyBinder binder, [PropertyBinderState? binderStack])
+  {
+    if (binderStack != null)
+    {
+      binderStack.dispose();
+    }
+
+    final newStack = PropertyBinderState._(binder);
+
+    return newStack;
+  }
+
+  void setOnChange(String? name, PropertyOnChange onChange)
+  {
+    if (!eventList.contains(onChange))
+    {
+      binder.setOnChange(name, onChange);
+    }
+  }
+
+  void dispose()
+  {
+    eventList.forEach
+    (
+      (element)
+      {
+        if (element.name == null) {}
+      }
+    );
+  }
+}
+
+class _PropertyBinderStackItem
+{
+  String? name;
+  late PropertyOnChange change;
+
+  _PropertyBinderStackItem(this.name, this.change);
+}

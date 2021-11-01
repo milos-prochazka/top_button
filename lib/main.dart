@@ -16,9 +16,6 @@ class MyApp extends StatelessWidget
   @override
   Widget build(BuildContext context)
   {
-    final p = BindableProperty('aaa', 'lojza');
-    final cmp = p.compare('lojza');
-
     return MaterialApp
     (
       title: 'Flutter Demo',
@@ -45,6 +42,7 @@ class MyHomePage extends StatefulWidget
 class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleMixin
 {
   int _counter = 0;
+  PropertyBinderState? binderState;
 
   @override
   void onLifecycleEvent(LifecycleEvent event)
@@ -64,13 +62,29 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
   }
 
   @override
+  void dispose()
+  {
+    super.dispose();
+    binderState?.dispose();
+    binderState = null;
+  }
+
+  @override
   Widget build(BuildContext context1)
   {
-    return PropertyBinder
+    var result = PropertyBinder
     (
       context: context1,
       builder: (context)
       {
+        binderState = PropertyBinderState.createOrChange(PropertyBinder.of(context), binderState);
+        binderState!.setOnChange
+        (
+          'cnt', (binder, property)
+          {
+            print('cnt = ${property.value as double}');
+          }
+        );
         return Scaffold
         (
           appBar: AppBar
@@ -79,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
           ),
           body: SafeArea
           (
+            key: Key('aaaa'),
             child: TopButtons
             (
               [
@@ -99,7 +114,16 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
               foregroundColor: Colors.white70,
               event: (param)
               {
-                var i = param.cmdType;
+                PropertyBinder.doOnProperty
+                (
+                  context, 'cnt', (binder, property)
+                  {
+                    var cnt = property.valueT(0.0);
+                    property.setValue(binder, cnt + 1);
+                  }
+                );
+
+                /*var i = param.cmdType;
                 PropertyBinder.doOn
                 (
                   context, (binder)
@@ -107,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
                     var c = binder.getProperty('cnt', 0.0);
                     binder.setProperty('cnt', c + 1.0);
                   }
-                );
+                );*/
               },
             )
           ),
@@ -121,6 +145,8 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
         );
       }
     );
+
+    return result;
   }
 
   void onTap()

@@ -1,4 +1,5 @@
 #!/bin/sh
+
 read -p "Komentar ke commitu:" comment
 
 cd ..
@@ -11,6 +12,8 @@ fi
 
 dart-format ./ 2
 dart-prep --enable-all ./
+find ./ -name "*.bak" -type f -delete
+
 git add --all
 git commit --all -m "$comment"
 git push origin master --force
