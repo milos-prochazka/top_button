@@ -73,70 +73,22 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
   }
 
   @override
-  Widget build(BuildContext context1)
+  Widget build(BuildContext buildContext)
   {
     var result = PropertyBinder
     (
-      context: context1,
+      context: buildContext,
       builder: (context)
       {
-        binderState = PropertyBinderState.createOrChange(PropertyBinder.of(context), binderState);
-        binderState!.setOnChange
-        (
-'cnt', (binder, property)
-          {
-            print('cnt = ${property.value as double}');
-          }
-        );
+        bind(context);
+
         return Scaffold
         (
           appBar: AppBar
           (
             title: Text(widget.title),
           ),
-          body: SafeArea
-          (
-            child: topButtons = TopButtons
-            (
-              [
-                TopButtonItem
-                (
-                  type: TopButtonType.top,
-                  builder: (c, i)
-                  {
-                    return TopButton();
-                  }
-                ),
-                TopButton.createItem(id: 'a', type: TopButtonType.top, relativeWidth: 1.5, text: 'Tlac 2'),
-                TopButton.createItem(id: 'b', type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B1'),
-                TopButton.createItem(id: 'c', type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B2'),
-                TopButton.createItem(id: 'd', type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B3'),
-              ],
-              backgroundColor: Color.fromARGB(0xcc, 0x20, 0x40, 0x40),
-              foregroundColor: Colors.white70,
-              event: (param)
-              {
-                PropertyBinder.doOnProperty
-                (
-                  context, 'cnt', (binder, property)
-                  {
-                    var cnt = property.valueT(0.0);
-                    property.setValue(binder, cnt + 1);
-                  }
-                );
-
-                /*var i = param.cmdType;
-                PropertyBinder.doOn
-                (
-                  context, (binder)
-                  {
-                    var c = binder.getProperty('cnt', 0.0);
-                    binder.setProperty('cnt', c + 1.0);
-                  }
-                );*/
-              },
-            )
-          ),
+          body: SafeArea(child: _createBody(context)),
 
           floatingActionButton: FloatingActionButton
           (
@@ -149,6 +101,63 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
     );
 
     return result;
+  }
+
+  void bind(BuildContext context)
+  {
+    binderState = PropertyBinderState.createOrChange(PropertyBinder.of(context), binderState);
+    binderState!.setOnChange
+    (
+      'cnt', (binder, property)
+      {
+        print('cnt = ${property.value as double}');
+      }
+    );
+  }
+
+  Widget _createBody(BuildContext context)
+  {
+    topButtons = TopButtons
+    (
+      [
+        TopButtonItem
+        (
+          type: TopButtonType.top,
+          builder: (c, i)
+          {
+            return TopButton();
+          }
+        ),
+        TopButton.createItem(id: 'a', type: TopButtonType.top, relativeWidth: 1.5, text: 'Tlac 2'),
+        TopButton.createItem(id: 'b', type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B1'),
+        TopButton.createItem(id: 'c', type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B2'),
+        TopButton.createItem(id: 'd', type: TopButtonType.bottom, relativeWidth: 1, text: 'Tlac B3'),
+      ],
+      backgroundColor: Color.fromARGB(0xcc, 0x20, 0x40, 0x40),
+      foregroundColor: Colors.white70,
+      event: (param)
+      {
+        PropertyBinder.doOnProperty
+        (
+          context, 'cnt', (binder, property)
+          {
+            var cnt = property.valueT(0.0);
+            property.setValue(binder, cnt + 1);
+          }
+        );
+
+        /*var i = param.cmdType;
+                PropertyBinder.doOn
+                (
+                  context, (binder)
+                  {
+                    var c = binder.getProperty('cnt', 0.0);
+                    binder.setProperty('cnt', c + 1.0);
+                  }
+                );*/
+      },
+    );
+    return topButtons!;
   }
 
   void onTap()

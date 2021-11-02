@@ -8,10 +8,28 @@ class PropertyBinder extends InheritedWidget
   PropertyBinder({Key? key, required BuildContext context, required WidgetBuilder builder})
   : super(key: key, child: Builder(builder: builder));
 
-  /// Nastaveni property
+  /// Nastaveni property - Kontroluje zda se meni hodnota property. Pokud ano nastavi novou hodnmotu a vyvola
+  /// handlery udalosti.
+  ///
   /// - [key] Nazev property
   /// - [value] Hodnota property
   void setProperty(String key, dynamic value)
+  {
+    if (!properties.containsKey(key))
+    {
+      properties[key] = BindableProperty(key, value);
+    }
+    else
+    {
+      properties[key]?.setValue(this, value);
+    }
+  }
+
+  /// Nucene nastaveni property - nekontroluje se zmena. Vzdy se vyvolaji handlery udalosti.
+  ///
+  /// - [key] Nazev property
+  /// - [value] Hodnota property
+  void forceProperty(String key, dynamic value)
   {
     if (!properties.containsKey(key))
     {
@@ -203,33 +221,78 @@ class BindableProperty
     }
   }
 
+  void forceValue(PropertyBinder binder, dynamic newValue)
+  {
+    this.value = newValue;
+
+    events.forEach
+    (
+      (element)
+      {
+        element(binder, this);
+      }
+    );
+
+    binder.events.forEach
+    (
+      (element)
+      {
+        element(binder, this);
+      }
+    );
+  }
+
   void setValue(PropertyBinder binder, dynamic newValue)
   {
     if (!compare(newValue))
     {
-      this.value = newValue;
-
-      events.forEach
-      (
-        (element)
-        {
-          element(binder, this);
-        }
-      );
-
-      binder.events.forEach
-      (
-        (element)
-        {
-          element(binder, this);
-        }
-      );
+      forceValue(binder, newValue);
     }
   }
 }
 
 typedef void PropertyOnChange(PropertyBinder binder, BindableProperty property);
 
+/// Stav property binderu slouzi k pripojeni a odpojeni udalosti k jednotlivym property.
+/// Stav je nutne uchovavat na urovni StatefulWidgetu a uvolnit vsechny navazane property ve behem [bind]
+/// ```dart
+/// class _MyHomePageState extends State<MyHomePage>
+/// {
+///   PropertyBinderState? binderState;
+///
+///   @override
+///   Widget build(BuildContext buildContext)
+///   {
+///      . . .
+///      bind(context);
+///      . . .
+///      // Zmena hodnoty property cnt
+///      PropertyBinder.doOnProperty
+///      (
+///        context, 'cnt', (binder, property)
+///        {
+///            var cnt = property.valueT(0.0);
+///            property.setValue(binder, cnt + 1);
+///        }
+///      );
+///      . . .
+///   }
+///
+///   // Pripojeni property cnt a vypsani jeji hodnoty po kazde zmene
+///   void bind(BuildContext context)
+///   {
+///      binderState = PropertyBinderState.createOrChange(PropertyBinder.of(context), binderState);
+///      binderState!.setOnChange
+///      (
+///        'cnt', (binder, property)
+///        {
+///          print('cnt = ${property.value as double}');
+///        }
+///    );
+///
+/// }
+/// ```
+///
 class PropertyBinderState
 {
   final eventList = <_PropertyBinderStackItem>[];
