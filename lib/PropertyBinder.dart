@@ -8,9 +8,10 @@ class PropertyBinder extends InheritedWidget
   PropertyBinder({Key? key, required BuildContext context, required WidgetBuilder builder})
   : super(key: key, child: Builder(builder: builder));
 
-  /// Nastaveni property - Kontroluje zda se meni hodnota property. Pokud ano nastavi novou hodnmotu a vyvola
-  /// handlery udalosti.
-  ///
+  /// Nastaveni property
+  /// * Kontroluje zda se meni hodnota property.
+  /// * Pokud ano nastavi novou hodnotu a vyvola handlery udalosti.
+  ///  **Parametry**
   /// - [key] Nazev property
   /// - [value] Hodnota property
   void setProperty(String key, dynamic value)
@@ -25,11 +26,13 @@ class PropertyBinder extends InheritedWidget
     }
   }
 
-  /// Nucene nastaveni property - nekontroluje se zmena. Vzdy se vyvolaji handlery udalosti.
-  /// Mozno vyuzit k vysilani zprav do handleru udalosti.
-  ///
-  /// - [key] Nazev property
-  /// - [value] Hodnota property
+  /// Nucene nastaveni property
+  /// * Nekontroluje se zmena hodnoty property.
+  /// * Vzdy se vyvolaji handlery udalosti.
+  /// * Mozno vyuzit k vysilani zprav do handleru udalosti.
+  /// **Parametry**
+  /// * [key] Nazev property
+  /// * [value] Hodnota property
   void forceProperty(String key, dynamic value)
   {
     if (!properties.containsKey(key))
@@ -42,6 +45,7 @@ class PropertyBinder extends InheritedWidget
     }
   }
 
+  //
   void _setOnChange(String? key, PropertyOnChange onChange)
   {
     if (key == null)
@@ -91,7 +95,7 @@ class PropertyBinder extends InheritedWidget
   }
 
   /// Ziskani odkazu na objekt BindableProperty zadaneho nazvu.
-  /// Pokud objekt neexistuje vytvori ho, zaregistruje ho a priradi mu default value
+  /// * Pokud objekt neexistuje vytvori ho, zaregistruje ho a priradi mu default value
   BindableProperty getOrCreateBindableProperty(String key, [dynamic defValue])
   {
     if (properties.containsKey(key))
@@ -106,8 +110,8 @@ class PropertyBinder extends InheritedWidget
     }
   }
 
-  /// Cte property jako objekt zadaneho typu. Pokud nesoulasi property neexistuje, nebo nesouhlasi jeho typ
-  /// vrati defValue.
+  /// Cte property jako objekt zadaneho typu.
+  /// * Pokud nesoulasi property neexistuje, nebo nesouhlasi jeho typ vrati [defValue].
   T getProperty<T>(String name, T defValue)
   {
     if (properties.containsKey(name))
@@ -154,15 +158,18 @@ class PropertyBinder extends InheritedWidget
 
   static void doOnT<T extends PropertyBinder>(BuildContext context, PropertyBinderDoOn caller)
   {
+    T? result;
+
     try
     {
-      final T? result = context.dependOnInheritedWidgetOfExactType<T>();
-      if (result != null)
-      {
-        caller(result);
-      }
+      result = context.dependOnInheritedWidgetOfExactType<T>();
     }
     catch ($) {}
+
+    if (result != null)
+    {
+      caller(result);
+    }
   }
 
   static void doOnProperty(BuildContext context, String key, PropertyBinderDoOnProperty caller)
@@ -315,14 +322,17 @@ class PropertyBinderState
   final eventList = <_PropertyBinderStackItem>[];
   final PropertyBinder binder;
 
+  /// Interni konstruktor
   PropertyBinderState._(this.binder);
 
-  static PropertyBinderState createOrChange(PropertyBinder binder, [PropertyBinderState? binderStack])
+  /// Vytvoreni / vymena objektu binder state
+  /// * Typicky se pouziva v ramci build metody
+  /// * Metode se predava puvodni objekt BinderState (nebo null pokud neexistuje)
+  /// * Na puvodnim objektu se provede dispose
+  /// * Vytvori se novy objekt BinderState a ten se vrati (pri dalsim volani bind se preda k dispose)
+  static PropertyBinderState createOrChange(PropertyBinder binder, [PropertyBinderState? binderState])
   {
-    if (binderStack != null)
-    {
-      binderStack.dispose();
-    }
+    binderState?.dispose();
 
     final newStack = PropertyBinderState._(binder);
 

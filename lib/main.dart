@@ -135,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
     binderState = PropertyBinderState.createOrChange(PropertyBinder.of(context), binderState);
     binderState!.setOnChange
     (
-      'cnt', (binder, property)
+'cnt', (binder, property)
       {
         print('cnt = ${property.value as double}');
       }
