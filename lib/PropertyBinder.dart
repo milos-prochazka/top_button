@@ -26,6 +26,7 @@ class PropertyBinder extends InheritedWidget
   }
 
   /// Nucene nastaveni property - nekontroluje se zmena. Vzdy se vyvolaji handlery udalosti.
+  /// Mozno vyuzit k vysilani zprav do handleru udalosti.
   ///
   /// - [key] Nazev property
   /// - [value] Hodnota property
@@ -37,7 +38,7 @@ class PropertyBinder extends InheritedWidget
     }
     else
     {
-      properties[key]?.setValue(this, value);
+      properties[key]?.forceValue(this, value);
     }
   }
 
@@ -70,11 +71,13 @@ class PropertyBinder extends InheritedWidget
     }
   }
 
+  /// Odstraneni property
   void removeProperty(String key)
   {
     properties.remove(key);
   }
 
+  /// Cteni property jako dynamic objekt
   dynamic getPropertyDynamic(String key, [dynamic defValue])
   {
     if (properties.containsKey(key))
@@ -87,6 +90,8 @@ class PropertyBinder extends InheritedWidget
     }
   }
 
+  /// Ziskani odkazu na objekt BindableProperty zadaneho nazvu.
+  /// Pokud objekt neexistuje vytvori ho, zaregistruje ho a priradi mu default value
   BindableProperty getOrCreateBindableProperty(String key, [dynamic defValue])
   {
     if (properties.containsKey(key))
@@ -101,6 +106,8 @@ class PropertyBinder extends InheritedWidget
     }
   }
 
+  /// Cte property jako objekt zadaneho typu. Pokud nesoulasi property neexistuje, nebo nesouhlasi jeho typ
+  /// vrati defValue.
   T getProperty<T>(String name, T defValue)
   {
     if (properties.containsKey(name))
@@ -288,7 +295,17 @@ typedef void PropertyOnChange(PropertyBinder binder, BindableProperty property);
 ///        {
 ///          print('cnt = ${property.value as double}');
 ///        }
-///    );
+///      );
+///   }
+///
+///  // Uvolneni binderState uvolni i onChange property 'cnt'
+///  @override
+///  void dispose()
+///  {
+///    super.dispose();
+///    binderState?.dispose();
+///    binderState = null;
+///  }
 ///
 /// }
 /// ```

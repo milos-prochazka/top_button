@@ -94,10 +94,23 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
             (
               children:
               [
-                ElevatedButton
+                Align
                 (
-                  child: Text('blabla'),
-                  onPressed: () {},
+                  alignment: Alignment.bottomCenter,
+                  heightFactor: 15,
+                  child: ElevatedButton
+                  (
+                    child: Container
+                    (
+                      //height: 200,
+                      //width: 300,
+                      child: Text('blabla'),
+                    ),
+                    onPressed: ()
+                    {
+                      topButtons?.control.visible = !(topButtons?.control.visible ?? true);
+                    },
+                  )
                 ),
                 _buildBody(context)
               ]
@@ -122,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> with LifecycleAware, LifecycleM
     binderState = PropertyBinderState.createOrChange(PropertyBinder.of(context), binderState);
     binderState!.setOnChange
     (
-'cnt', (binder, property)
+      'cnt', (binder, property)
       {
         print('cnt = ${property.value as double}');
       }
